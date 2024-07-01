@@ -1,0 +1,464 @@
+You are given a string that represents time in the format hh:mm. Some of the digits are blank (represented by ?). Fill in ? such that the time represented by this string is the maximum possible.
+Maximum time: 23:59, minimum time: 00:00. You can assume that input string is always valid.
+
+
+#include <bits/stdc++.h>
+using namespace std;
+// #include<ext/pb_ds/assoc_container.hpp>
+// #include<ext/pb_ds/tree_policy.hpp>
+// using namespace __gnu_pbds;
+#define ll long long int
+#define ld long double
+#define vi vector<ll>
+#define vvi vector<vi>
+#define pii pair<ll, ll>
+// template for ordered multiset(pbds)
+// template<typename T>
+// using ordered_multiset = tree<
+//     pair<T, ll>,
+//     null_type,
+//     less<pair<T, ll>>,
+//     rb_tree_tag,
+//     tree_order_statistics_node_update>;
+
+// #define oset tree<ll, null_type,less<ll>, rb_tree_tag,tree_order_statistics_node_update>//oset name name.order_of_key(#ele<k) *name.find_by_order(index) element present at the ith index both in log(n)
+#define vii vector<pii>
+#define rep(i, a, b) for (ll i = a; i < b; i++)
+#define rev(i, a, b) for (ll i = a; i >= b; i--)
+#define ff first
+#define ss second
+#define all(v) v.begin(), v.end()
+#define sorta(a) sort(a, a + n);
+#define sortv(v) sort(v.begin(), v.end());
+#define pb push_back
+#define setBits(x) __builtin_popcountll(x)
+#define yes cout << "YES" \
+                 << "\n";
+#define no cout << "NO" \
+                << "\n";
+// #define in(n) \
+//     ll n;     \
+//     cin >> n;
+#define str(s) \
+    string s;  \
+    cin >> s;
+#define ain(a, n) \
+    ll a[n];      \
+    rep(i, 0, n) cin >> a[i];
+#define vin(v, n)    \
+    vector<ll> v(n); \
+    rep(i, 0, n) cin >> v[i];
+#define aout(a, n)                    \
+    rep(i, 0, n) cout << a[i] << " "; \
+    cout << "\n";
+#define vout(v, n)                    \
+    rep(i, 0, n) cout << v[i] << " "; \
+    cout << "\n";
+#define Reset(a, b) memset(a, b, sizeof(a));
+#define en cout << "\n";
+#define max_ele(a) *max_element(all(a));
+#define min_ele(a) *min_element(all(a));
+// #include "segmentTree.h"
+ll dr[4] = {0, 0, 1, -1};
+ll dc[4] = {1, -1, 0, 0};
+const int N = 1e5 + 5, MOD = 1e9 + 7;
+// # define LENGTH 100005
+#define LENGTH 2000001
+ 
+ll gcd(ll a, ll b) { return b == 0 ? a : gcd(b, a % b); }
+ll lcm(ll a, ll b) { return (a / gcd(a, b)) * b; }
+ 
+class DisjointSet
+{
+    // t cO(N*M*logN)
+public:
+    vector<int> parent, size;
+    DisjointSet(int n)
+    {                         // disjoint set is not a graph its a different data structure
+        parent.resize(n + 1); // declaring a size of n+1 as it will take inot account of both 0 as well as one based graphs
+        size.resize(n + 1);
+        for (int i = 0; i <= n; i++)
+        {
+            parent[i] = i; // initialing marking parent of each node to itself
+            size[i] = 1;
+        }
+    }
+    void setParent(int node, int par)
+    {
+        parent[node] = par;
+    }
+    // finding the ultimate parent
+    int findUparent(int node)
+    {
+        if (node == parent[node])
+            return node;                                 // base case of the recursion(1 wala case)
+        return parent[node] = findUparent(parent[node]); // path compressing  to avoid doing repetitive tasks
+                                                         // storing the the ultimate parent of each and every node
+    }
+    bool uni(int u, int v)
+    { // is it possible to do union ops
+        int pu = findUparent(u);
+        int pv = findUparent(v);
+        if (pu == pv)
+            return false;
+        else
+        {
+            parent[pu] = pv;
+            return true;
+        }
+    }
+ 
+    void findUnionSize(int u, int v)
+    {
+        int ulp_u = findUparent(u);
+        int ulp_v = findUparent(v);
+        if (ulp_u == ulp_v)
+            return;
+        if (size[ulp_u] < size[ulp_v])
+        {
+            parent[ulp_u] = ulp_v; // attch to the larger and at the same incease the size of the larger one by the size of the smaller one
+            size[ulp_v] += size[ulp_u];
+        }
+        else
+        {
+            parent[ulp_v] = ulp_u; // attch to the larger and at the same incease the size of the larger one by the size of the smaller one
+            size[ulp_u] += size[ulp_v];
+        }
+    }
+};
+ll powerM(ll x, ll y)
+{
+    if (y < 0ll)
+        return 0;
+    ll result = 1ll;
+    x = x % MOD;
+    if (x == 0ll)
+        return 0;
+    while (y > 0ll)
+    {
+        if (y & 1ll)
+            result = (result * x) % MOD;
+        y = y >> 1ll;
+        x = (x * x) % MOD;
+    }
+    return result;
+}
+ 
+ll modAdd(ll x, ll y)
+{
+    x %= MOD;
+    y %= MOD;
+    return (x + y) % MOD;
+}
+ 
+ll modMul(ll x, ll y, ll MOD)
+{
+    return ((x % MOD) * 1ll * (y % MOD)) % MOD;
+}
+ 
+ll biExp(ll x, ll y)
+{
+    if (y == 0)
+        return 1ll;
+    ll ans = 1ll;
+    x %= MOD;
+    while (y)
+    {
+        if (y & 1)
+            ans = modMul(ans, x, MOD);
+        x = modMul(x, x, MOD);
+        y >>= 1ll;
+    }
+    return ans;
+}
+ 
+ll mmi(ll x)
+{
+    return biExp(x, MOD - 2);
+}
+ 
+ll modDiv(ll x, ll y)
+{
+    return modMul(x, mmi(y), MOD);
+}
+ 
+ll fac[LENGTH];
+void factorial_tab()
+{
+    fac[0] = 1;
+    fac[1] = 1;
+    for (int i = 2; i < LENGTH; i++)
+        fac[i] = (fac[i - 1] % MOD * i % MOD) % MOD;
+    return;
+}
+ 
+ll nCr(ll n, ll k)
+{
+    if (n < k)
+        return 0;
+    if (k < 0)
+        return 0;
+    if (n == 0)
+        return 1;
+    return modDiv(fac[n], modMul(fac[k], fac[n - k], MOD));
+}
+ 
+ll nPr(ll n, ll r)
+{
+    return modDiv(fac[n], fac[n - r]);
+}
+ 
+ll modSub(ll A, ll B)
+{
+    return (A - B + MOD) % MOD;
+}
+ 
+vector<ll> printPrimeFactors(ll n)
+{
+    vector<ll> ans;
+    while (n % 2 == 0)
+    {
+        ans.pb(2);
+        n = n / 2;
+    }
+    for (int i = 3; i <= sqrtl(n); i = i + 2)
+    {
+        while (n % i == 0)
+        {
+            ans.pb(i);
+            n = n / i;
+        }
+    }
+    if (n > 2)
+        ans.pb(n);
+    return ans;
+}
+ 
+ll countBits(ll n) { return (ll)log2(n) + 1; }
+ 
+int countDivisors(int n)
+{
+    int cnt = 0;
+    for (int i = 1; i <= sqrt(n); i++)
+    {
+        if (n % i == 0)
+        {
+            if (n / i == i)
+                cnt++;
+            else
+                cnt = cnt + 2;
+        }
+    }
+    return cnt;
+}
+ 
+bool _2PowerH(ll n)
+{
+    if (n == 0)
+        return false;
+    return (ceil(log2(n)) == floor(log2(n)));
+}
+ 
+vector<bool> isprime(1e5 + 5, true);
+void sieve(int n)
+{
+    isprime[0] = false;
+    isprime[1] = false;
+    for (int i = 2; i * i <= n; ++i)
+    {
+        if (isprime[i])
+        {
+            for (int j = i * i; j <= n; j += i)
+                isprime[j] = false;
+        }
+    }
+}
+struct comp{// conparator syntax
+    bool operator() (const pii &a,const pii & b) const {
+         if (a.first == b.first)
+            return a.second > b.second;
+        return a.first < b.first;
+    }
+};
+         
+// bool static comp(const pii &a, const pii &b)
+// {
+//     if (a.first < b.first)
+//         return true;
+//     else if (a.first == b.first)
+//         return a.second > b.second;
+//     return false;
+// }
+ 
+
+// ll n, q;
+ /*
+// Fenwick tree
+//  ll n;
+//  vector<ll> arr;
+//  vector<pii>sumVals;
+ ll n;
+struct BIT {
+    vector<ll> bit;
+ 
+    BIT () {
+        //bit.resize(size);
+         bit.resize((ll) 6e5);
+    }
+ 
+    void update (ll i, ll val) {
+        for ( ; i < n; i |= i + 1) {
+            bit[i] += val;
+        }
+    }
+ 
+    void update (ll l, ll r, ll val) {
+        update(l, val);
+        update(r + 1, -val);
+    }
+ 
+    ll get (ll i) {
+        ll sum = 0;
+        for (; i >= 0; i = (i & (i + 1)) - 1)
+            sum += bit[i];
+        return sum;
+    }
+    ll get(ll l,ll r){
+        return(get(r)- get(l-1));
+    }
+}; 
+*/
+
+/*
+// One based indexing
+ll inp[N];
+struct Segment_Tree{
+    ll ST[N],lazy[N];
+    void propagate(ll SI,ll b,ll e){
+        if(lazy[SI]!=0){
+            ST[SI]+=lazy[SI];
+            if(b!=e){
+                lazy[2*SI]+=lazy[SI];
+                lazy[2*SI+1]+=lazy[SI];
+            }
+            lazy[SI]=0;
+        }
+        return;
+    }
+    void build(ll SI,ll b,ll e){
+        if(b==e){
+            ST[SI]=0;
+            return;
+        }
+        ll left=2*SI;
+        ll right=left+1;
+        ll mid=(b+e)/2;
+        build(left,b,mid);
+        build(right,mid+1,e);
+        ST[SI]= min(ST[left],ST[right]);
+    }
+    // increament by val
+    void update(ll SI,ll b,ll e,ll l,ll r,ll val){
+        if(b>r || e<l){
+            return;
+        }
+        if(b>=l && e<=r){
+            ST[SI]+=val;
+            return;
+        }
+        ll left=2*SI;
+        ll right=left+1;
+        ll mid=(b+e)/2;
+        update(left,b,mid,l,r,val);
+        update(right,mid+1,e,l,r,val);
+        ST[SI]= min(ST[left],ST[right]);
+    }
+    ll query(ll SI,ll b,ll e,ll l,ll r){
+        if(b>r || e<l){
+            return INT_MAX;
+        }
+        if(b>=l && e<=r){
+            return ST[SI];
+        }
+        ll left=2*SI;
+        ll right=left+1;
+        ll mid=(b+e)/2;
+        ll L=query(left,b,mid,l,r);
+        ll R=query(right,mid+1,e,l,r);
+        return min(L,R);
+    }
+}tr;
+*/
+
+ 
+
+// Z array stores the max length prefix that
+// matches with substring starting at index i 
+vector<ll> z_func(string s)
+{
+	ll n = s.size(); 
+	vector<ll>z(n,0); 
+	ll l = 0, r = 0;
+
+	// Iterate to create the Z function 
+	for(ll i = 1;i < n;i++)
+	{
+
+		// Copy till previous 
+		// is does not exceeds range 
+		if(i<=r)
+			z[i] = min(r-i+1,z[i-l]); 
+        
+        // Re-start comparison 
+		while(i + z[i] < n && s[z[i]] == s[i+z[i]])
+		{
+			z[i]++;
+		}
+
+		if(i+z[i]-1>r)
+		{
+			l = i; 
+			r = i+z[i]-1; 
+		}
+	}
+	return z;
+}
+
+void solve()
+{   
+     string s;cin>>s;
+     int n=s.size();
+    //  for(int i=n-1;i>=0;i--){
+
+    //  }
+    if(s[4]=='?'){
+       
+        s[4]='9';
+    }
+   
+    if(s[3]=='?'){
+        s[3]='5';
+    }
+    if(s[0]=='?'){
+        if(s[1]!='?' && s[1]>='4') s[0]='1';
+        else s[0]='2';
+    }
+    if(s[1]=='?'){
+        if(s[0]<='1') s[1]='9';
+        else s[1]='3';
+    }
+
+    cout<<s<<"\n";
+}
+int32_t main()
+{ 
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    int t=1;
+    // cin >> t;
+    while (t--){ 
+     solve();     
+    }
+
+    return 0;
+}
