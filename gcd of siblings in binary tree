@@ -1,3 +1,4 @@
+// Similar question
 Question #1:
 GCD (Greatest Common Divisor) of two positive integers is the largest positive integer that divides both numbers without a remainder.
 Siblings: Nodes with the same parent are called siblings.
@@ -33,6 +34,7 @@ Constraints:
 void solve()
 {   
      ll n; cin>>n; 
+  //if(n == -1) return -1;
      ll mx=-1e4, mini=1e9;
      vector<vector<ll>>v;
     for(ll i=0;i<=n;i++){// levels
