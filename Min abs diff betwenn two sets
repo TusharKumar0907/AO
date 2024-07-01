@@ -1,0 +1,66 @@
+// vvvvvimp : Subset sums nice variation 
+
+There are some processes that need to be executed. Amount of a load that process causes on a server that runs it, is being represented by a single integer. Total load caused on a server is the sum of the loads of all the processes that run on that server. You have at your disposal two servers, on which mentioned processes can be run. Your goal is to distribute given processes between those two servers in the way that, absolute difference of their loads will be minimized.
+
+Given an array of n integers, of which represents loads caused by successive processes, return the minimum absolute difference of server loads.
+
+
+
+
+// memo 
+ll f(ll i, ll sum , ll tot, vector<ll>&a, ll n,vector<vector<ll>>&dp){
+     if(i <0) return abs( (tot-sum) - sum);
+    
+     if(dp[i][sum] !=-1) return dp[i][sum];
+     ll tk= 1e9, ntake= 1e9;
+     tk= f(i-1, sum + a[i], tot, a, n,dp);
+     ntake= f(i-1, sum, tot, a, n,dp);
+     return dp[i][sum]=min(tk, ntake);
+}
+void solve()
+{   
+     ll n; cin>>n; 
+     vin(a,n)
+     ll tot=0;
+     for(auto &it: a) tot+= it;
+     vector<vector<ll>>dp(n+1, vector<ll>(tot+1,-1)); 
+     ll mini=f(n-1, 0, tot, a,n,dp);
+     cout<<mini<<"\n";
+}
+
+// tab
+
+// in tab approach : first find what are possible values of subsets sum possible
+// then consider the sum which gives the min abs diff
+
+ll tab(ll tot,ll n,vector<vector<bool>>&dp, vector<ll>&a ){
+     for(ll i=1;i<=n;i++) dp[i][0]=1;// sum=0 is always poss
+
+
+     for(ll i=1;i<=n;i++){
+        for(ll sum=1;sum<=tot; sum++){
+             bool  tk=0, ntake=0;
+           tk |= dp[i-1][sum- a[i]];
+           ntake= dp[i-1][sum];
+            
+            dp[i][sum]= (tk | ntake);
+        }
+     }
+
+     for(ll sum= tot/2; sum>=0;sum--){
+         if(dp[n][sum]){
+            cout<<(tot - 2*sum)<<"\n"; break;
+         }
+     }
+}
+void solve()
+{   
+     ll n; cin>>n; 
+    vector<ll>a(n+1,0);
+    for(ll i=1;i<=n;i++) cin>>a[i];
+     ll tot=0;
+     for(auto &it: a) tot+= it;
+     vector<vector<bool>>dp(n+1, vector<bool>(tot+1,0)); 
+     ll mini=tab(tot,n,dp,a);
+     cout<<mini<<"\n";
+}
