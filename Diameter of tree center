@@ -1,0 +1,52 @@
+VVimp 
+You are given a tree-shaped undirected graph consisting of n nodes labeled 1...n and n-1 edges. The i-th edge connects nodes edges[i][0] and edges[i][1] together.
+For a node x in the tree, let d(x) be the distance (the number of edges) from x to its farthest node. Find the min value of d(x) for the given tree.
+The tree has the following properties:
+
+It is connected.
+It has no cycles.
+For any pair of distinct nodes x and y in the tree, there's exactly 1 path connecting x and y
+
+Example 1:
+Input: n = 6, edges = [[1, 4], [2, 3], [3, 4], [4, 5], [5, 6]]
+ans= 2
+
+ll cal_dia(vector<ll>adj[],vector<ll>&deg,ll n){
+   vector<ll>depth(n+1,0), vis(n+1,0);
+   queue<ll>q;
+   ll dia=0;
+   // calculate the degree of each vertex
+    for(ll i=1;i<=n; i++){
+        if(deg[i]==1) q.push(i);
+    }
+
+    while(!q.empty()){
+        auto u= q.front(); q.pop();
+        vis[u]=1;
+        for(auto &v:adj[u]){
+            if(--deg[v]==1) q.push(v);
+            if(!vis[v]){
+                dia= max(dia, depth[u]+depth[v]+1);
+                depth[v]= max(depth[v], depth[u]+1);
+            }
+        }
+    }
+
+  return dia;  
+}
+void solve()
+{   
+     ll n; cin>>n; 
+     vector<ll>adj[n+1];
+     vector<ll>deg(n+1,0);
+     for(ll i=1;i<n;i++){
+        ll u,v ;cin>>u>>v;
+        adj[u].pb(v);
+        adj[v].pb(u);
+        deg[u]++; deg[v]++;
+     }
+     // find the diameter of the tree
+     // ans= ceil(diameter)
+     ll dia= cal_dia(adj, deg,n);
+     cout<< (dia/2)+(dia%2) <<"\n";
+}
