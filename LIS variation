@@ -1,0 +1,96 @@
+You are given 2 arrays representing integer locations of stores and houses (each location in this problem is one-dementional). For each house, find the store closest to it.
+Return an integer array result where result[i] should denote the location of the store closest to the i-th house. If many stores are equidistant from a particular house, choose the store with the smallest numerical location. Note that there may be multiple stores and houses at the same location.
+
+Example 1:
+
+Input: houses = [5, 10, 17], stores = [1, 5, 20, 11, 16]
+Output: [5, 11, 16]
+Explanation: 
+The closest store to the house at location 5 is the store at the same location.
+The closest store to the house at location 10 is the store at the location 11.
+The closest store to the house at location 17 is the store at the location 16.
+Example 2:
+
+Input: houses = [2, 4, 2], stores = [5, 1, 2, 3]
+Output: [2, 3, 2]
+Example 3:
+
+Input: houses = [4, 8, 1, 1], stores = [5, 3, 1, 2, 6]
+Output: [3, 6, 1, 1]
+
+
+class Solution {
+public:
+// tc O(n*log(n)) using binary search lower_bound is the most optimal soln
+int bs(vector<int>&v){
+   int  n=v.size();
+   vector<int>pseudoLis;
+   for(auto &it: v){
+       if(pseudoLis.size()==0) {
+           pseudoLis.push_back(it);
+           continue;
+       }
+       auto id=lower_bound(pseudoLis.begin(),pseudoLis.end(),it) - pseudoLis.begin();
+       if(id> pseudoLis.size()-1) pseudoLis.push_back(it);
+       else pseudoLis[id]=it;       
+   }
+   return pseudoLis.size();
+}
+
+
+
+
+
+
+
+
+int lis(int i,vector<int>&v,int prev,int n,vector<vector<int>>&dp){
+  if(i>=n) return 0;
+  if(dp[i][prev+1] !=-1) return dp[i][prev+1];
+  int take=0,ntake=0;
+  if(prev==-1 ||( prev>=0 &&  v[i]>v[prev])) take=1+lis(i+1,v,i,n,dp);
+  ntake=0+lis(i+1,v,prev,n,dp);
+
+  return dp[i][prev+1]=max(take,ntake);
+}
+int tab(vector<int>&v){
+     vector<vector<int>>dp(2503,vector<int>(2503,0));
+     int n=v.size();
+     for(int i=n-1;i>=0;i--){
+         for(int prev=i-1;prev>=-1;prev--){// catch prev(i-1 ---->-1)
+               int take=0,ntake=0;
+                if(prev==-1 ||( prev>=0 &&  v[i]>v[prev])) take=1+dp[i+1][i+1];
+                ntake=0+dp[i+1][prev+1];
+
+             dp[i][prev+1]=max(take,ntake);
+         }
+     }
+   return dp[0][0];  
+}
+int space(vector<int>&v){
+     vector<int>nxt(2503,0);
+
+     int n=v.size();
+     for(int i=n-1;i>=0;i--){
+         vector<int>curr(2503,0);
+         for(int prev=i-1;prev>=-1;prev--){// catch prev(i-1 ---->-1)
+               int take=0,ntake=0;
+                if(prev==-1 ||( prev>=0 &&  v[i]>v[prev])) take=1+nxt[i+1];
+                ntake=0+nxt[prev+1];
+
+            curr[prev+1]=max(take,ntake);
+         }
+        nxt=curr;
+     }
+   return nxt[0];  
+}
+    int lengthOfLIS(vector<int>& nums) {
+        int n=nums.size();
+        // vector<vector<int>>dp(2503,vector<int>(2503,-1));
+        // return lis(0,nums,-1,n,dp);
+        // return tab(nums);
+        // return space(nums);
+
+        return bs(nums);
+    }
+};
