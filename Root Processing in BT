@@ -61,3 +61,36 @@ int dfs(TreeNode* root, int& glo_mx){
         return glo_mx;
     }
 };
+// Actual asked qustion :
+Position : Software Engineer III
+Location : India
+
+The Maximum Path
+Problem Statement -
+
+You are given a tree with N nodes. Each node is assigned a value a (1 <= a <= N)
+Find the maximum path between any two nodes. Nodes can be same also.
+
+Input Format -
+First line is the number of testcases T
+The first line of each testcase contains N denoting number of nodes in the tree
+Second contains N spaced integers denoting the values (a)
+Next N-1 lines of each testcase contains two integers U and V, denoting the edge between the node U to V of a tree.
+
+Sample Input
+
+1
+5
+4 -1 -3 5 7
+1 2
+1 3 
+2 4
+2 5
+Sample Output
+11
+
+Constraints
+1 <= T <= 10
+1 <= N <= 10000
+-1000000 <= a[i] <= 1000000
+1 <= U, V < N
