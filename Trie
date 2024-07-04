@@ -1,0 +1,66 @@
+
+The distance between 2 binary strings is the sum of their lengths after removing the common prefix. For example: the common prefix of 1011000 and 1011110 is 1011 so the distance is len("000") + len("110") = 3 + 3 = 6.
+
+Given a list of binary strings, pick a pair that gives you maximum distance among all possible pair and return that distance.
+
+
+
+struct node{
+   ll val;// represents the max len of suffix for curr prefix
+   bool isEnd;
+   node* left;
+   node* right;
+   node(ll x): val(x), left(nullptr), isEnd(0), right(nullptr){}
+};
+void buildTree(node* root, string s,ll n){
+     ll i=0;
+     node* curr=root;
+     for(auto &c:s){
+        if(c=='0'){// left
+          if(curr->left ==nullptr){
+            curr->left= new node(n-i);
+          }
+          else curr->left->val = max(curr->left->val, n-i);
+           curr=curr->left;
+        }
+        else{//1 right
+            if(curr->right ==nullptr){
+            curr->right= new node(n-i);
+            }
+           else curr->right->val = max(curr->right->val, n-i);
+            curr=curr->right;
+        }       
+     }
+
+   curr->isEnd=1;  
+}
+void solve()
+{   
+  ll tt; cin>>tt; 
+  ll ans=0;
+     node* root= new node(0);
+  for(ll i=0;i<tt;i++){
+    string s; cin>>s;
+    ll n=s.size();
+    buildTree(root,s,n);
+  }  
+    // now do bfs to find the ans
+    queue<node*>q;
+    q.push(root);
+    while(!q.empty()){
+        auto curr= q.front();
+        q.pop();
+       
+        if(curr->left || curr->right){
+             // For each node maximum ans= sum of both of its children
+            if(curr->left && curr->right) ans=max(ans,curr->left->val + curr->right->val);
+            // if curr is pointing to end of any string , update ans with the only child
+            ans= max(ans, curr->left ? curr->left->val : curr->right->val);
+        }
+
+       if(curr->left) q.push(curr->left);
+       if(curr->right) q.push(curr->right); 
+    }
+    
+    cout<<ans<<"\n";     
+}
