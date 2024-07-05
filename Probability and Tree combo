@@ -1,0 +1,73 @@
+ You are given an n-ary tree where each node can have up to n children ( i.e. 0 to n ). A frog is currently sitting at a root node. It is given that frog can jump from the current node to any of its child nodes with equal probability. The frog can stay on the current node only if the current node has zero child nodes (i.e. leaf node) otherwise frog must jump. For each node find the probability that the frog is present at that node after an infinite amount of time.
+
+Inference: Only leaf nodes will have non-zero probability, the rest of the nodes will have zero probability.
+
+Approach: Simple DFS. 
+
+Let’s say the frog is at some arbitrary node-x which has m-children and the probability to reach node-x from the root is Px.
+The probability to jump from node-x to any of its child nodes is 1/m. 
+The probability of a frog reaching any of its child nodes from the root is = (Px)*(1/m) = Py.
+For each node, we store the value of Py in our result array. And finally, we change the value of Py to zero for all non-leaf nodes in the result array.
+
+
+
+
+
+
+
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+void dfs(int node, double prob, const vector<vector<int>>& adj, unordered_map<int, double>& result) {
+    if (adj[node].empty()) {
+        result[node] = prob;
+        return;
+    }
+    
+    int numChildren = adj[node].size();
+    double childProb = prob / numChildren;
+    
+    for (int child : adj[node]) {
+        dfs(child, childProb, adj, result);
+    }
+}
+
+unordered_map<int, double> frogProbabilities(int n, const vector<pair<int, int>>& edges) {
+    vector<vector<int>> adj(n);
+    
+    for (const auto& edge : edges) {
+        adj[edge.first].push_back(edge.second);
+    }
+    
+    unordered_map<int, double> result;
+    dfs(0, 1.0, adj, result);
+    
+    for (auto it = result.begin(); it != result.end();) {
+        if (!adj[it->first].empty()) {
+            it = result.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    
+    return result;
+}
+
+int main() {
+    int n = 11;
+    vector<pair<int, int>> edges = {
+        {0, 1}, {0, 2}, {0, 3}, {1, 4}, {1, 5}, {2, 6}, 
+        {3, 7}, {3, 8}, {3, 9}, {3, 10}
+    };
+
+    unordered_map<int, double> probabilities = frogProbabilities(n, edges);
+
+    for (const auto& p : probabilities) {
+        cout << "Node " << p.first << ": " << p.second << endl;
+    }
+
+    return 0;
+}
