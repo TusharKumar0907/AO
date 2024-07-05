@@ -1,0 +1,62 @@
+Assume a cartesian coordinate system. You are given the position coordinates of a set of K routers.
+All routers are capable of sending and receiving signals. Out of these K routers,
+One router is termed as “Source” and one specific router is termed as “Destination”.
+You are given a Range-R. When a router sends a signal, all routers within range R will receive the signal and 
+then they will re-transmit the signal. (Imagine this range-R as a circle of radius=R).
+Determine whether the “Destination” router will receive a signal transmitted by the “Sender” router.
+
+Approach: Simple BFS
+
+Start BFS from the source router
+We calculate the shortest distance between the current router and all unvisited routers. If the shortest distance is less than R, we put the coordinates of that router inside the queue and mark those routers as visited.
+After completion of BFS, check whether is destination router is marked as visited or not.
+Again coded this solution on “google-interview”.
+
+Follow-up question: If there are too many queries of different sources and different destinations, will it be feasible to apply BFS each and every time? What will you do in that case?
+
+Ans: We can memoize our solution. And only apply BFS when the solution is not present in our cache.
+//My sol
+class Solution {
+public:
+//  tc O(n^3)
+double sqr( int a){
+    return a*1ll*a;
+}
+bool can_reach(vector<int>a,vector<int>b){
+    double d=sqrt(sqr(a[0]-b[0])+ sqr(a[1]-b[1]));
+    if(a[2]>=d) return true;
+    return false;
+}
+bool dfs(int node, vector<int>adj[],vector<bool>&vis,int dest){
+    vis[node]=1;
+    if(node==dest) return true;
+   
+    for(auto &it:adj[node]){
+        if(!vis[it]){
+             if(dfs(it,adj,vis,dest)==1) return true;
+        }
+    }
+
+  return false;  
+}
+    int maximumDetonation(vector<vector<int>>& bombs) {
+        int n=bombs.size();
+        vector<int>adj[n];// sc O(n^2)
+        for(int i=0;i<n;i++){// O(n^2)
+            for(int j=0;j<n;j++){
+                if(can_reach(bombs[i],bombs[j])){
+                    adj[i].push_back(j);
+                }
+                 if(can_reach(bombs[j],bombs[i])){
+                    adj[j].push_back(i);
+                }
+            }
+        }
+      
+     vector<bool>vis(n,0);
+     int dest=4, src=0;
+     
+    return  dfs(0,adj,vis,dest);// for every starting bomb go to every n^2 possible edges at worst case O(n^2)
+         
+   }
+};
