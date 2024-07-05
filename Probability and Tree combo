@@ -10,7 +10,12 @@ The probability of a frog reaching any of its child nodes from the root is = (Px
 For each node, we store the value of Py in our result array. And finally, we change the value of Py to zero for all non-leaf nodes in the result array.
 
 
+Follow-up Question: Instead of a tree, assume it is a Directed acyclic graph.
 
+Approach: Simple DFS but only on outgoing edges.
+
+The probability to reach the current node-x from the root will now be equal to the sum of probabilities from all its incoming edge path.
+we will only jump to the children node from the current node-x when we’ve traversed all the incoming edges of node-x.
 
 
 
