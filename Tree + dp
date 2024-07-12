@@ -1,0 +1,14 @@
+ Question – THE VALUE OF A WEIGHTED TREE
+
+You are given a weighted undirected tree with N nodes. Every edge has a weight associated with it.
+
+You are required to find the value of ∑(i=1 to N-1) ∑(j=i+1 to N) F(i,j) function where F(i,j) denotes the sum of weights of edges on a simple path between node i and j.
+
+Input format:
+
+The first line contains an integer T denoting the number of test cases.
+The first line of each test case contains an integer N denoting the number of nodes in the tree.
+Next N-1 lines contain three space-separated integers u v w denoting an edge between u and v with weight w.
+Output format:
+
+For each test case, print the value of function modulo 10^9 + 7 in a new line.
