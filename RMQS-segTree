@@ -1,0 +1,71 @@
+You are given an array A with N integers. You are required to answer Q queries of the following type:L R
+Determine the count of distinct prime numbers that divides all the array values from index L to R.
+
+NOTE: Consider 1-based indexing
+
+Input format: 
+
+The first line contains an integer T denoting the number of test cases.
+The first line of each test case contains an integer N.
+The second line of each test case contains N space-separated integers denoting A.
+The third line contains integer Q.
+Next, Q lines contain two space-separated integers denoting the queries.
+Output Format;
+
+Print the count of distinct prime numbers that divides all the array values from index L to R.
+
+Experience: I have solved this using segment trees
+
+
+
+
+
+
+
+
+
+vector<ll>primes;
+void solve()
+{   
+    ll n; cin>>n;
+    vector<ll>a(n+1,0);
+    for(ll i=1;i<=n; i++) cin>>a[i];
+    stree.build(1,1,n);
+ // update  phase
+    for(auto &p: primes){
+        for(ll i=1;i<=n;i++){
+            ll ele=a[i];
+            if(ele%p ==0) stree.update(1,1,n,i,i,1);
+        }
+    }
+ // query phase
+
+    ll q ;cin>>q;
+    while(q--){
+        ll l, r; cin>>l>>r;
+        ll mini= stree.query(1,1,n,l,r) ;
+        cout<<mini<<"\n";
+    }
+   
+}
+int32_t main()
+{ 
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    int t=1;
+    // cin >> t;
+    int tt=1;
+    sieve(1e5);
+
+     for(ll i=0;i<4000; i++){
+        if(isprime[i]) primes.pb(i);
+     }
+
+    while (tt <=t){ 
+        // cout<<"entered\n";
+        // cout<<"Case #"<<tt<<": ";
+        tt++;
+       
+       solve();     
+    }
+   
